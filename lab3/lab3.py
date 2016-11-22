@@ -7,27 +7,24 @@ import numpy.linalg as linalg
 
 def solve(A, f):
     size = len(f)
-    c = np.array([A[i, i] for i in range(size)])
-    b = np.array([-A[i, i + 1] for i in range(size - 1)])
-    a = np.array([-A[i, i - 1] for i in range(1, size)])
-    y = np.zeros(size)
-    eta = np.zeros(size + 1)
-    ksi = np.zeros(size + 1)
-    for i in reversed(range(size - 1)):
-        if i == size - 2:
-            ksi[i] = a[i] / c[i + 1]
-        else:
-            ksi[i] = a[i] / (c[i + 1] - b[i + 1] * ksi[i + 1])
-    for i in reversed(range(size)):
-        if i == size - 1:
-            eta[i] = f[i] / c[i]
-        else:
-            eta[i] = (f[i] + b[i] * eta[i + 1]) / (c[i] - ksi[i + 1] * b[i])
+    b = np.zeros(size)
+    a = np.zeros(size)
+    c = np.zeros(size)
     for i in range(size):
-        if i == 0:
-            y[i] = eta[i]
-        else:
-            y[i] =  ksi[i] * y[i - 1] + eta[i]
+        c[i] = A[i, i]
+        if i != size - 1:
+            b[i] = -A[i, i + 1]
+        if i != 0:
+            a[i] = -A[i, i - 1]
+    ksi = np.zeros(size + 1)
+    for i in reversed(range(size)):
+        ksi[i] = (a[i]) / (c[i] - ksi[i + 1] * b[i])
+    eta = np.zeros(size + 1)
+    for i in reversed(range(size)):
+        eta[i] = (f[i] + b[i] * eta[i + 1]) / (c[i] - ksi[i + 1] * b[i])
+    y = np.zeros(size)
+    for i in range(size):
+        y[i] = ksi[i] * y[i - 1] + eta[i]
     return y
 
 
@@ -43,11 +40,8 @@ b = np.array(b)
 print("Решаем матричное уравнение методом квадратного корня")
 print("Основная матрица системы:")
 print(A)
-print("Свободные члены:")
-print(b)
+print("Свободные члены: ", b)
 ans = solve(A, b)
-print("Решение системы:")
-print(ans)
-print(linalg.solve(A, b))
-print("Невязка:")
-print(linalg.norm(np.dot(A, ans) - b))
+print("Решение системы: ", ans)
+print("Невязка: ", np.dot(A, ans) - b)
+print("Норма невязки: ", linalg.norm(np.dot(A, ans) - b))
