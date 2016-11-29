@@ -1,0 +1,7 @@
+[default]
+name=Default
+device=local
+runtime=host
+config-opts=
+prefix=/home/tkachuk/.cache/gnome-builder/install/lab4/host
+default=true
