@@ -4,8 +4,6 @@ import numpy.linalg as linalg
 
 # Метод левой прогонки
 
-# Основная программа
-
 
 def solve(A, f):
     size = len(f)
@@ -25,7 +23,6 @@ def solve(A, f):
             eta[i] = f[i] / c[i]
         else:
             eta[i] = (f[i] + b[i] * eta[i + 1]) / (c[i] - ksi[i + 1] * b[i])
-
     for i in range(size):
         if i == 0:
             y[i] = eta[i]

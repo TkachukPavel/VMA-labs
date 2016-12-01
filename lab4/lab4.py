@@ -30,7 +30,7 @@ for line in file:
     b.append(float(line.split().pop()))
 A = np.array(A)
 b = np.array(b)
-print("Решаем матричное уравнение методом квадратного корня")
+print("Решаем матричное уравнение методом отражений")
 print("Основная матрица системы:")
 print(A)
 print("Свободные члены: ", b)

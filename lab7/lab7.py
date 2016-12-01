@@ -2,7 +2,7 @@ import numpy as np
 import numpy.linalg as linalg
 
 
-# Метод отражений
+# Поиск собственных векторов методом Крылова
 
 
 def eigen(A):
@@ -13,13 +13,11 @@ def eigen(A):
     c = np.dot(A, C[:, size - 1])
     C = C[:, ::-1]
     q = linalg.solve(C, c)
-    print(q)
-    p = [1] + list(q * -1)
-    print(p)
+    p = [1] + list(q * -1)	# Получили коэфициенты собственного многочлена
 
-    eigvals = np.roots(p)
+    eigvals = np.roots(p)	# Находим его корни			
 
-    beta = np.zeros(size)
+    beta = np.zeros(size)	# Вычисляем собственный вектор
     beta[0] = 1
     for i in range(1, size):
         beta[i] = beta[i - 1] * eigvals[0] + p[i]
