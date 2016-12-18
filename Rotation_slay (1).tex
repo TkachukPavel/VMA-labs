@@ -1,0 +1,224 @@
+\documentclass[11.4pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage[a4paper,margin=1.0in,footskip=0.25in]{geometry}
+
+\makeatletter
+\newcommand{\verbatimfont}[1]{\renewcommand{\verbatim@font}{\ttfamily#1}}
+\graphicspath{ {/home/danilyanich/Projects/C++/Схема единственного деления/} }
+\author{Рак Алексей}
+\title{Схема единственного деления}
+\begin{document}
+	\begin{titlepage}
+		\centering
+		{\scshape\LARGE Вычислительные методы алгебры \par}
+		\vfill
+		{\scshape\Large Лаборатоная работа 4 \par}
+		\vspace{1cm}
+		{\huge\bfseries Решение СЛАУ методом отражений\par}
+		\vspace{10cm}
+		\begin{flushright}
+		Ткачук Павел\par
+		1 группа \par
+		\vspace{0.5cm}
+		Преподаватель:\par
+		Будник Анатолий Михайлович
+		\end{flushright}
+		
+		\vfill
+		{\large \today}
+	\end{titlepage}
+\section{Постановка задачи}
+	Cистемa:
+	\begin{equation}
+		\left\{
+			\begin{array}{c}
+				a_{1,1} x_1 + a_{1,2} x_2 + \ldots + a_{1,n} x_n = b_1  \\
+				a_{2,1} x_1 + a_{2,2} x_2 + \ldots + a_{2,n} x_n = b_2  \\
+				\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots  \\
+				a_{n,1} x_1 + a_{n,2} x_2 + \ldots + a_{n,n} x_n = b_n  
+			\end{array}
+		\right.
+	\end{equation}
+	Входные данные:
+	\[
+		\left[
+			\begin{array}{ccccc|c}
+				0.6444 & 0.0000 & -0.1683 & 0.1184 & 0.1973 & 1.2677\\
+				-0.0395 & 0.4208 & 0.0000 & -0.0802 & 0.0263 & 1.6819\\
+				0.0132  & -0.1184 & 0.7627 & 0.0145 & 0.0460 & -2.3657\\
+				0.0395 & 0.0000 & -0.0960 & 0.7627 & 0.0000 & -6.5369\\
+				0.0263 & -0.0395 & 0.1907 & -0.0158 & 0.5523 & 2.8351
+			\end{array}
+		\right]
+	\]
+	Задача:
+	\begin{enumerate}
+		\item Методом отражений найти решение СЛАУ $x$
+		\item Найти вектор невязки $r = Ax-b$
+	\end{enumerate}
+\section{Алгоритм}
+Матрицу отражения рассчитываем по формулe:
+\begin{align}\label{first}
+	\begin{array}{ccc}
+		V = E - 2\omega\omega^{T},  $ где$\\
+		\omega = k (s - \alpha e),&
+		\alpha = \sqrt{(s, s)},&
+		k = \dfrac{1}{\sqrt{2(s, s - \alpha e)}}
+	\end{array}
+\end{align}
+1-й этап:\\
+Используя формулы (\ref{first}), образуем матрицу отражения $V_1$ по векторам
+$s_1=(a_{11}, a_{21}, \ldots, a_{n1})^T$ и $e_1=(1, 0, \ldots, 0)^T$.
+Умножив исходное уравнение слева на $V_1$, получим систему
+\begin{equation}\label{second}
+A^{(1)}x = f^{(1)},
+\end{equation}
+где в матрице $A^{(1)} = V_1 A$ все поддиагональные элементы первого столбца равны нулю, а формулы для вычисления всех остальных ее элементов $a_{ij,1}$, а также вектора $f^{(1)} = V_1 f$ $(f_{i, 1})$
+имеют вид
+\begin{align}
+	\begin{split}
+		&a_{i1, 1} = \alpha_1;\\
+		&a_{ij, 1} = a_{ij} -2(b_j,\omega_1)\omega_{i, 1}, \: i = 1,\ldots,n; \: j=2,\ldots,n;\\
+		&f_{i,1} = f_i - 2(f,\omega_1)\omega_{i,1}, \: i = 1,\ldots,n,
+	\end{split}	
+\end{align}
+(здесь $b_j=(a_{1j},\ldots, a_{nj})^T$ и $(b_j, \omega_1)=\sum\limits_{p=1}^n b_{pj} \omega_{p,1}$)
+и непосредственно следуют из (\ref{second})\\
+На втором этапе аналогично образуем матрицу $V_2$ по векторам $s_2=(0, a_{22,1},\ldots,a_{n2,1})^T$ и
+$e_2=(0,1,0,\ldots, 0)^T$. Умножив слева (\ref{second}) на $V_2$, перейдем к системе
+\begin{equation}\label{third}
+	A^{(2)}x=f^{(2)}
+\end{equation}
+в матрице $A^{(2)}$ которой первая строка совпадает с первой строкой матрицы $A^{(1)}$ (поскольку матрица $V_2$ блочно-диагональная и первый блок - размера $1\times1$ - единичная матрица) и все поддиагональные элементы второго столбца равны нулю. Полные формулы пересчета будут иметь вид
+\begin{align}	
+		\begin{split}
+		&a_{1j, 2} = a_{1j,1}, \: j=1,\ldots,n;\\
+		&a_{22,2} = \alpha_2; \\
+		&a_{ij, 2} = a_{ij, 1} -2(b_j^{(1)},\omega_2)\omega_{i, 2},\: i = 2,\ldots,n; \: j=3,\ldots,n;\\
+		&f_{i,2} = f_{i,1} - 2(f^{(1)},\omega_2)\omega_{i,2}, \: i = 2,\ldots,n,
+		\end{split}
+\end{align}
+(аналогично здесь $b_j^{(1)}=(a_{1j,1},\ldots, a_{nj,1})^T$ и $(b_j^{(1)}, \omega_2)=\sum\limits_{p=2}^n b_{pj}^{(1)} \omega_{p,2}$).\\
+По аналогии с описанным выше преобразования $k$ -го этапа осуществляются с по-
+мощью матрицы отражения $V_k$ , образованной по векторам  $s_k=(0,\ldots,0, a_{kk,k-1},\ldots,a_{nk,k-1})^T$  и
+$e_k=(0,\ldots,0,1,0\ldots, 0)^T$ (у последнего единственная отличная от нуля компонента стоит на
+k -м месте) и приводят при любом 1 ≤ k ≤ n −1 к системе
+\begin{equation}
+	A^{(k)}x=f^{(k)},
+\end{equation}
+где
+\begin{align}
+		\begin{split}
+		&a_{ij, k} = a_{ij, k-1}, \: i=1,\ldots,k-1; \: j=1,\ldots,n;\\
+		&a_{kk,k} = \alpha_k; \\
+		&a_{ik,k} = 0, \: i=k+1,\ldots,n;\\
+		&a_{ij, k} = a_{ij, k-1} -2(b_j^{(k-1)},\omega_k)\omega_{i, k}, \: i = k,\ldots,n; \: j=k+1,\ldots,n;\\
+		&f_{i,k} = f_{i,k - 1} - 2(f^{(k -1)},\omega_k)\omega_{i,k},\: i = k,\ldots,n,
+		\end{split}		
+\end{align}
+Как и выше, здесь $b_j^{(k-1)}=(a_{1j,k-1},\ldots, a_{nj,k-1})^T$ и  $(b_j^{(k-1)}, \omega_k)=\sum\limits_{p=k}^n b_{pj}^{(k-1)} \omega_{p,k}$.\\
+После выполнения $(n-1)$ этапов будем иметь систему
+\[A^{(n-1)}x=f^{(n-1)},\]
+матрица которой – верхняя треугольная. Далее остается для нахождения неизвестных вы-
+полнить обратный ход, аналогичный обратному ходу метода Гаусса. 
+\section{Результаты и вывод}
+	\subsection{Входные данные}
+		5\\
+		0.7424 0.0000 -0.1939 0.1364 0.2273 3.5330\\
+		-0.0455 0.4848 0.0000 -0.0924 0.0303 -3.4254\\
+		0.0152 -0.1364 0.8787 0.0167 0.0530 -2.2483\\
+		0.0455 0.0000 -0.1106 0.8787 0.0000 1.4120\\
+		0.0303 -0.0455 0.2197 -0.0182 0.6363 2.6634\\
+	\subsection{Выходные данные}
+		Решение:\\
+		1.99956 -6.99985 -4.00041 0.999857 4.99986 \\
+		Вектор невязки:\\
+		0 0 1.33227e-15 -2.22045e-16 0 \\
+	\subsection{Вывод}
+		Ответ с точностью до 5-ти знаков после запятой совпадает с ответом 				полученным методом Гаусса и методом квадратного корня.\\
+		Вектор невязки стал немного больше, в методах Гаусса и квадратного 				корня ни один элемент вектора невязки не превосходил $1e-15$.
+\section{Листинг кода}
+\verbatimfont{\small}
+\begin{verbatim}
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+void input(std::istream &fin, std::vector<std::vector<double>>* matrix) {
+    size_t size = 0;
+    fin >> size;
+    matrix->resize(size);
+    for (size_t i = 0; i < size; ++i) {
+        matrix->at(i).resize(size + 1);
+        for (size_t j = 0; j < size + 1; ++j) {
+            fin >> matrix->at(i)[j];
+        }
+    }
+}
+
+void output_vector(std::ostream &fout, const std::vector<double> &x) {
+    for (size_t i = 0; i < x.size(); ++i) {
+        fout << x[i] << " ";
+    }
+    fout << std::endl;
+}
+
+std::vector<double> rotation(std::vector<std::vector<double>> matrix) {
+    std::vector<double> x(matrix.size());
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = i + 1; j < matrix.size(); ++j) {
+            double b = matrix[j][i];
+            double a = matrix[i][i];
+            double c = a / sqrt(a * a + b * b);
+            double s = b / sqrt(a * a + b * b);
+            for (size_t k = i; k < matrix.size() + 1; ++k) {
+                double t = matrix[i][k];
+                matrix[i][k] = c * matrix[i][k] + s * matrix[j][k];
+                matrix[j][k] = -s * t + c * matrix[j][k];
+            }
+        }
+    }
+
+    for (size_t i = matrix.size() - 1; i < matrix.size(); --i) {
+        double sum = 0.;
+        for (size_t j = i + 1; j < matrix.size(); ++j)
+            sum += matrix[i][j] * x[j];
+        sum = matrix[i][matrix.size()] - sum;
+        x[i] = sum / matrix[i][i];
+    }
+
+    return std::move(x);
+}
+
+std::vector<double> vector_of_residuals(const std::vector<std::vector<double>> &matrix, const std::vector<double> &x) {
+    std::vector<double> r(x.size());
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = 0; j < matrix.size(); ++j) {
+            r[i] += matrix[i][j] * x[j];
+        }
+        r[i] -= matrix[i][matrix.size()];
+    }
+    return std::move(r);
+}
+
+int main(int args, char* argv[]) {
+    freopen("input", "r", stdin);
+    freopen("output", "w", stdout);
+    std::vector<std::vector<double>> matrix;
+    input(std::cin, &matrix);
+    fclose(stdin);
+    std::vector<double> x = rotation(matrix);
+    std::cout << "Решение:" << std::endl;
+    output_vector(std::cout, x);
+    std::vector<double> r = vector_of_residuals(matrix, x);
+    std::cout << "Вектор невязки:" << std::endl;
+    output_vector(std::cout, r);
+    fclose(stdout);
+    return 0;
+}
+\end{verbatim}
+\end{document}
