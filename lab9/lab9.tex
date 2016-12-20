@@ -1,0 +1,192 @@
+\documentclass[11.4pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage[a4paper,margin=1.0in,footskip=0.25in]{geometry}
+
+\makeatletter
+\newcommand{\verbatimfont}[1]{\renewcommand{\verbatim@font}{\ttfamily#1}}
+\graphicspath{ {/home/danilyanich/Projects/C++/Схема единственного деления/} }
+\author{Ткачук Павел}
+\title{Схема единственного деления}
+\begin{document}
+	\begin{titlepage}
+		
+		\centering
+		{\scshape\LARGE ФПМИ БГУ \par}
+		\vfill
+		\begin{flushleft}
+		{\scshape\Large Вычислительные методы алгебры\par Лаборатоная работа 9 \par}
+		\vspace{1cm}
+		{\huge\bfseries Нахождение собственных значений и собственных векторов методом Леверье и Фаддеева\par}
+		\end{flushleft}
+		\vspace{10cm}
+		\begin{flushright}
+		\large
+		Подготовил:\par
+		Ткачук Павел\par
+		2 курс 1 группа\par
+		\vspace{0.5cm}
+		Преподаватель:\par
+		Будник Анатолий Михайлович
+		\end{flushright}
+		
+		\vfill
+		{\large \today}
+	\end{titlepage}
+\section{Постановка задачи}
+	Входные данные:
+	\[ A_{\text{исх.}}=
+		\left[
+			\begin{array}{ccccc}
+				0.6444 & 0.0000 & -0.1683 & 0.1184 & 0.1973\\
+				-0.0395 & 0.4208 & 0.0000 & -0.0802 & 0.0263\\
+				0.0132  & -0.1184 & 0.7627 & 0.0145 & 0.0460\\
+				0.0395 & 0.0000 & -0.0960 & 0.7627 & 0.0000\\
+				0.0263 & -0.0395 & 0.1907 & -0.0158 & 0.5523
+			\end{array}
+		\right]
+	\]
+	Для того чтобы все собственные значения были действительными числами, домножим слева исходную матрицу на ей транспонированную:
+	\[ A=A_{\text{исх.}}A_{\text{исх.}}^T=
+		\left[
+			\begin{array}{ccccc}
+				 0.4965221 & -0.02976049 & -0.10906373 &  0.13191428 & 0.09195098\\
+ 				-0.02976049 & 0.18575662 & -0.05029722 & -0.06272879 & -0.0018678\\
+ 				-0.10906373 & -0.05029722 & 0.59823034 & -0.06163865 &  0.17564755\\
+ 				 0.13191428 & -0.06272879 & -0.06163865 &  0.59248754 & -0.02931901\\
+ 				 0.09195098 & -0.0018678  & 0.17564755 & -0.02931901 &  0.34390336
+			\end{array}
+		\right]
+	\]
+	Задача:
+	\begin{enumerate}
+		\item Для данной матрицы $A$ вычислить коэфициенты $p_1,p_2,\ldots,p_n$ собственного многочлена (метод Леверье, метод Фаддеева) \[P(A)=\lambda^n - p_1\lambda^{n-1} - p_2\lambda^{n-2}-\ldots-p_{n-1}\lambda - p_n\]
+		\subitem (проверить совпадает ли $p_1=Sp(A)$ и $p_n = \det(A)$)
+		\item По  полученному характеристическому многочлену вычислить максимальное собственное значение $\lambda_{max}$ матрицы
+		\item Вычислить собственный вектор $\vec{v}$ соответствующий данному значению (метод Фаддеева)
+		\item Найти невязку $\vec{r} = A\vec{v} - \lambda_{max}\vec{v} $
+	\end{enumerate}
+\section{Алгоритм}
+	\subsection{Метод Леверье}
+		\begin{enumerate}
+			\item Находим значения $S_k$ \[S_k=Sp\:A^k, \: k = 1,\ldots n\]
+			\item По полученным значениям вычисляем коэфициенты характерестического многочлена
+				\[p_k = \dfrac{1}{k}\left( S_k - \sum\limits_{i=1}^{k-1}p_iS_{k-i} \right), \: k = 1,\ldots,n\]
+		\end{enumerate}
+	\subsection{Метод Фаддеева}
+		\begin{enumerate}
+			\item Находим матрицы $A_1, A_2, \ldots, A_n$
+				\begin{equation*}
+					\begin{array}{cccc}
+						A_1 = A, & Sp\: A_1=q_1, \: & B_1=A_1-q_1E,\\
+						A_k = AB_{k-1},\: & \dfrac{1}{k}Sp\:A_k=q_k, \: &B_k=A_k-q_kE, & k=2,\ldots,n
+					\end{array}						
+			\end{equation*}
+			\item Полученные значения $(q_1, q_2,\ldots, q_n)$ являются соответсвующими коэфициентами $(p_1, p_2, \ldots, p_n)$ характеристического многочлена исходной матрицы
+			\item Находим $\lambda_{max}$ - макисмальный корень характеристического уравнения \[\lambda^n - p_1\lambda^{n-1} - p_2\lambda^{n-2}-\ldots-p_{n-1}\lambda - p_n = 0\]
+			\item По полученному $\lambda_{max}$ вычисляем собственный вектор, соотвествующий данному значению \[\]
+			\begin{equation*}
+					\begin{aligned}
+					&\vec{v} = \lambda^{n-1}_{max}e + \lambda^{n-2}_{max}b_1 + \lambda^{n-3}_{max}b_2 + \cdots + \lambda_{max}b_{n-2} + b_{n-1}, \: \text{где}\\
+					&e = (1, 0, 0, \ldots, 0)^T\\
+					&b_1, b_2, \ldots, b_{n-1}\text{- первые столбцы соответствующих матриц } B_1, B_2, \ldots, B_{n-1}
+					\end{aligned}
+			\end{equation*}
+		\end{enumerate}
+\section{Результаты и вывод}
+	\subsection{Входные данные}
+		0.6444 0.0000 -0.1683 0.1184 0.1973\\
+		-0.0395 0.4208 0.0000 -0.0802 0.0263\\
+		0.0132 -0.1184 0.7627 0.0145 0.0460\\
+		0.0395 0.0000 -0.0960 0.7627 0.0000\\
+		0.0263 -0.0395 0.1907 -0.0158 0.5523\\
+	\subsection{Выходные данные}
+\begin{verbatim}
+Ищем собственные вектор матрицы
+Исходная матрица:
+[[ 0.4965221  -0.02976049 -0.10906373  0.13191428  0.09195098]
+ [-0.02976049  0.18575662 -0.05029722 -0.06272879 -0.0018678 ]
+ [-0.10906373 -0.05029722  0.59823034 -0.06163865  0.17564755]
+ [ 0.13191428 -0.06272879 -0.06163865  0.59248754 -0.02931901]
+ [ 0.09195098 -0.0018678   0.17564755 -0.02931901  0.34390336]]
+Метод Леверье
+Коэфициенты характеристического многочлена
+ [ 2.21689996 -1.82259145  0.68304846 -0.11469321  0.0069546 ]
+q_1-Sp(A) =  1.92392075075 q_n-det(A) =  0.00695459981768
+Метод Фаддеева
+Коэфициенты характеристического многочлена
+ [ 2.21689996 -1.82259145  0.68304846 -0.11469321  0.0069546 ]
+q_1-Sp(A) =  0.0 q_n-det(A) =  2.60208521397e-18
+Собственное значение:  0.780834944861
+Собственный вектор:  [ 0.00382651 -0.00022833 -0.00553064  0.00483712 -0.00174166]
+Невязка:  [ -6.33174069e-17   5.42101086e-19   6.07153217e-18  -9.10729825e-18
+  -4.55364912e-18]
+Норма невязки:  6.44199502585e-17
+
+ \end{verbatim}
+	\subsection{Вывод}
+Как видно из полученных результатов, расхождение у коэффициентов минимального многочлена, полученных этими способами начинаются только в -16 порядке, так они построены на одинаковых рассуждениях, а само расхождение появляется только в результате вычислительных погрешностей. Модификация метода Леверрье Фаддеевым позволяет получить не только минимальный многочлен, но и построить соответствующие собственные вектора, с точностью выше, чем у метода Данилевского и ниже, чем у метода Крылова.
+\newpage
+\section{Листинг кода}
+\begin{verbatim}
+import numpy as np
+import numpy.linalg as linalg
+
+def leberie(matr_A):
+    A = matr_A.copy()
+    n = len(A)
+    s = np.zeros(n + 1)
+    for i in range(1, n + 1):
+        s[i] = sum(A[j, j] for j in range(n))
+        A = np.dot(A, matr_A)
+    p = np.zeros(n + 1)
+    for i in range(1, n + 1):
+        p[i] = (s[i] - sum(s[j]*p[i-j] for j in range(i))) / i
+    print("Коэфициенты характеристического многочлена\n", p[1:])
+    print("q_1-Sp(A) = ", abs(A.trace() - p[1]), "q_n-det(A) = ", abs(linalg.det(A) - p[n]))
+    return p[1:]
+
+def faddeev(matr_A):
+    A = matr_A.copy()
+    n = len(A)
+    q = np.zeros(n + 1)
+    resB = np.eye(n)
+    E = np.eye(n)
+    for i in range(1, n + 1):
+        q[i] = sum(A[i, i] for i in range(n)) / i
+        B = A - q[i]*E
+        resB[:,i-1] = B[:,0].copy()
+        A = np.dot(matr_A, B)
+    print("Коэфициенты характеристического многочлена\n", q[1:])
+    print("q_1-Sp(A) = ", abs(matr_A.trace() - q[1]), "q_n-det(A) = ", abs(linalg.det(matr_A) - q[n]))
+    p = [1] + list(q[1:] * -1)
+    eigvals = np.roots(p)
+    v = (eigvals[0] ** (n - 1))*E[:, 0]
+    for i in range(n - 1):
+        v += (eigvals[0] ** i) * resB[:,(n - i - 2)]
+    return v, eigvals[0]
+
+file = open("matrix", "r")  # Чтение файла
+A, b = [], []
+for line in file:
+    A.append([float(el) for el in line.split()[:-1]])
+    b.append(float(line.split().pop()))
+A = np.array(A)
+A = np.dot(A, A.transpose())
+b = np.array(b)
+print("Ищем собственные вектор матрицы")
+print("Исходная матрица:")
+print(A)
+print("Метод Леверье")
+leberie(A)
+print("Метод Фаддеева")
+ans = faddeev(A)
+print("Собственное значение: ", ans[1])
+print("Собственный вектор: ", ans[0])
+print("Невязка: ", np.dot(A, ans[0]) - ans[0] * ans[1])
+print("Норма невязки: ", linalg.norm(np.dot(A, ans[0]) - ans[0] * ans[1]))
+\end{verbatim}
+\end{document}

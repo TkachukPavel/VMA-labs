@@ -13,8 +13,9 @@ def eigen(A):
     c = np.dot(A, C[:, size - 1])
     C = C[:, ::-1]
     q = linalg.solve(C, c)
+    print("Коэфициенты характеристического многочлена\n", q)
+    print("q_1-Sp(A) = ", abs(A.trace() - q[0]), "q_n-det(A) = " ,abs(linalg.det(A) - q[size - 1]))
     p = [1] + list(q * -1)	# Получили коэфициенты собственного многочлена
-
     eigvals = np.roots(p)	# Находим его корни			
 
     beta = np.zeros(size)	# Вычисляем собственный вектор
@@ -32,7 +33,7 @@ for line in file:
 A = np.array(A)
 A = np.dot(A, A.transpose())
 b = np.array(b)
-print("Ищем собственные вектора матрицы")
+print("Ищем собственные вектор матрицы")
 print("Исходная матрица:")
 print(A)
 ans = eigen(A)
@@ -40,3 +41,5 @@ print("Собственное значение: ", ans[1])
 print("Собственный вектор (канонический базис): ", ans[0])
 print("Невязка: ", np.dot(A, ans[0]) - ans[0] * ans[1])
 print("Норма невязки: ", linalg.norm(np.dot(A, ans[0]) - ans[0] * ans[1]))
+v = ans[0]
+print(v / v[len(v) - 1])
